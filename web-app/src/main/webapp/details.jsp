@@ -257,7 +257,7 @@
                     </form>
 
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-info btn-simple"
+                        <button type="button" class="btn btn-info btn-simple" data-dismiss="modal"
                                 onclick="upgradeFirmware()">Send Operation
                         </button>
                     </div>
@@ -287,8 +287,8 @@
                         </div>
                     </form>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-info btn-simple"
-                                onclick="uploadConfiguration()">Send Operation
+                        <button type="button" class="btn btn-info btn-simple" data-dismiss="modal"
+                                onclick="uploadConfiguration() ">Send Operation
                         </button>
                     </div>
                 </div>
