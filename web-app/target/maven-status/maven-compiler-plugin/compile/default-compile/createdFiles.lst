@@ -1,0 +1,4 @@
+org/wso2/iot/locker/portal/LoginController.class
+org/wso2/iot/locker/portal/ConfigController.class
+org/wso2/iot/locker/portal/LoginException.class
+org/wso2/iot/locker/portal/InvokerController.class
