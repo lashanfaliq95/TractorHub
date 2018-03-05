@@ -152,8 +152,23 @@
                 </li>
             </ul>
 
-
-            <div id="mapid" style="width: 100%; height:50%; margin-top: 50px"></div>
+            <div class="card card-stats">
+                <div class="card-content">
+                    <p class="category" style="text-align:center"><STRONG>Send Operations</STRONG></p>
+                    <h3 class="title"></h3>
+                </div>
+                <div class="card-footer">
+                    <div class="stats" id="opeartions">
+                        <button class="btn btn-behance" style=" background-color: #a7e0e6;" data-toggle="modal"
+                                data-target="#upgradeFirmware"> Upgrade FirmWare
+                        </button>
+                        <button class="btn btn-behance" style="  background-color: #a7e0e6;" data-toggle="modal"
+                                data-target="#upgradeConfiguration"> Send Execution Plan
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div id="mapid" style="width: 100%; height:35%;"></div>
 
             <div class="card card-stats " style="margin-bottom: 10px">
                 <div class="card-content">
@@ -189,11 +204,6 @@
                     <strong><%=device.getString("name")%>
                     </strong> TractorHub Statistics
                     <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <button class="btn btn-white" data-toggle="modal"
-                                    data-target="#newDeviceModal"> Send Operation
-                            </button>
-                        </li>
                         <li class="dropdown pull-right">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                 <i class="material-icons">person</i>
@@ -211,7 +221,7 @@
             </div>
         </nav>
         <%--Popup modal for adding new device--%>
-        <div class="modal fade" id="newDeviceModal" tabindex="-1" role="dialog"
+        <div class="modal fade" id="upgradeFirmware" tabindex="-1" role="dialog"
              aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -219,39 +229,57 @@
                         <button type="button" class="close" data-dismiss="modal"
                                 aria-hidden="true">&times
                         </button>
-                        <h4 class="modal-title" id="myModalLabel" style="color:cornflowerblue;">
-                            Select Operation</h4>
+                        <h4 class="modal-title" style="color:cornflowerblue;">
+                            Upgrade Firmware</h4>
                     </div>
-                    <table style="text-align: center;">
-                        <tr>
-                            <td>
-                                <button class="btn btn-white"> Plot Path
-                                </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <button class="btn btn-white"> Send Execution Plan
-                                </button>
-                            </td>
-                        </tr>
+                    <form id="send-operation-upgradeFirmware" method="post">
+                        <div class="form-group" style="padding-left: 10%; padding-right: 10%;">
+                            <input type="text" name="firmwareUrl" id="firmwareUrl" value=""
+                                   placeholder="FirmWare URL"
+                                   class="form-control"/>
+                        </div>
+                    </form>
 
-                        <tr>
-                            <td>
-                                <button class="btn btn-white"> Control Engine
-                                </button>
-                            </td>
-                        </tr>
-                    </table>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default btn-simple"
-                                data-dismiss="modal">Close
+                        <button type="button" class="btn btn-info btn-simple"
+                                onclick="">Send Operation
                         </button>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="content" style="padding-top: 2px;">
+    </div>
+    <%--Popup modal for adding new device--%>
+    <div class="modal fade" id="upgradeConfiguration" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-hidden="true">&times
+                    </button>
+                    <h4 class="modal-title" style="color:cornflowerblue;">
+                        Upload new configuration</h4>
+                </div>
+
+                <form id="send-operation-executionPlan" method="post">
+                    <div class="form-group" style="padding-left: 10%; padding-right: 10%;">
+                        <input type="text" name="executionPlan" id="executionPlan" value=""
+                               placeholder="Execution Plan"
+                               class="form-control"/>
+                    </div>
+                </form>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-info btn-simple"
+                                onclick="">Send Operation
+                        </button>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="content" style="padding-top: 2px;">
             <div id="daterangebar" style="margin-left:35%;margin-top: -4px">
                 <div class="menubutton">
                     <h4 style="margin-top: -4px"><strong id="dateR" style=" font-size: 20px;">Date-range</strong></h4>
@@ -679,14 +707,16 @@
     var mymap = L.map('mapid').setView([7.9, 80.56274], 7);
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
         attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-        maxZoom: 18,
+        maxZoom: 7,
         id: 'mapbox.streets',
         accessToken: 'pk.eyJ1IjoibGFzaGFuIiwiYSI6ImNqYmc3dGVybTFlZ3UyeXF3cG8yNGxsdzMifQ.n3QEq0-g5tVFmsQxn3JZ-A',
         maxWidth: 200,
-        maxHeight: 200
+        maxHeight: 200,
+        closePopupOnClick: false,
     }).addTo(mymap);
 
     var marker = L.marker([<%=lat.getString("value")%>, <%=lon.getString("value")%>]).addTo(mymap);
+    mymap.fitBounds([[<%=lat.getString("value")%>, <%=lon.getString("value")%>]]);
     marker.bindPopup("<b><%=device.getString("name")%></b>").openPopup();
 
 

@@ -151,7 +151,7 @@
                             <div class="tab-content">
                                 <div id="tableview" class="tab-pane fade in active" style>
                                     <div class="card-content table-responsive">
-                                        <table class="table table-hover" id="devices-listing" style="height: 100%">
+                                        <table class="table table-hover" id="devices-listing">
                                             <thead>
                                             <th>Device Name</th>
                                             <th>Temperature</th>
