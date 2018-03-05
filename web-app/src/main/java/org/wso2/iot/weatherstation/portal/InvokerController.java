@@ -21,11 +21,7 @@ package org.wso2.iot.weatherstation.portal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.*;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
@@ -45,13 +41,8 @@ import javax.servlet.http.HttpSession;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 
-import static org.wso2.iot.weatherstation.portal.LoginController.ATTR_ACCESS_TOKEN;
-import static org.wso2.iot.weatherstation.portal.LoginController.ATTR_ENCODED_CLIENT_APP;
-import static org.wso2.iot.weatherstation.portal.LoginController.ATTR_REFRESH_TOKEN;
+import static org.wso2.iot.weatherstation.portal.LoginController.*;
 
 public class InvokerController extends HttpServlet {
     private static final Log log = LogFactory.getLog(LoginController.class);
@@ -198,7 +189,7 @@ public class InvokerController extends HttpServlet {
                     builder.build());
             return HttpClients.custom().setSSLSocketFactory(
                     sslsf).build();
-        } catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new LoginException("Error occurred while retrieving http client", e);
         }

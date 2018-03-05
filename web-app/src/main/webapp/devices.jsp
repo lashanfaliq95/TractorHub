@@ -252,7 +252,7 @@
         if (soilMoisture == null) {
             soilMoisture = 0;
         }
-        var popupContent = "<div onclick=\"window.location.href='details.jsp?id=" + devName + "'\"><b id='TractorHub" + devId + "' >" + devName + "</b><br><table><tr><td><i class=\"tiny material-icons\" >wb_sunny</i></td><td>" + precise_round(temp, 3) + "&#8451</td><td><i class=\"tiny material-icons\">opacity</i></td><td>" + humidity + "%</td><td><i class=\"tiny material-icons\" >gradient</i></td><td>" + soilMoisture + "<strong>%</strong></td></table></div>";
+        var popupContent = "<div onclick=\"window.location.href='details.jsp?id=" + devName + "'\"><b id='TRACTORHUB" + devId + "' >" + devName + "</b><br><table><tr><td><i class=\"tiny material-icons\" >wb_sunny</i></td><td>" + precise_round(temp, 3) + "&#8451</td><td><i class=\"tiny material-icons\">opacity</i></td><td>" + humidity + "%</td><td><i class=\"tiny material-icons\" >gradient</i></td><td>" + soilMoisture + "<strong>%</strong></td></table></div>";
         popup = new L.Popup({maxWidth: "auto", autoPan: false, closeButton: false, closeOnClick: false});
         popup.setLatLng(popupLocation);
         popup.setContent(popupContent);
@@ -385,7 +385,7 @@
             type: "POST",
             url: "invoker/execute",
             data: {
-                "uri": "/events/last-known/TractorHub/" + devicesTemp[index].deviceIdentifier + "?limit=5",
+                "uri": "/events/last-known/TRACTORHUB/" + devicesTemp[index].deviceIdentifier + "?limit=5",
                 "method": "get"
             },
             success: lastKnownSuccess
@@ -413,7 +413,7 @@
             type: "POST",
             url: "invoker/execute",
             data: {
-                "uri": "/devices/?type=TractorHub&requireDeviceInfo=true&offset=" + offset + "&limit=" + limit,
+                "uri": "/devices/?type=TRACTORHUB&requireDeviceInfo=true&offset=" + offset + "&limit=" + limit,
                 "method": "get"
             },
             success: getsuccess
@@ -449,7 +449,7 @@
             type: "POST",
             url: "invoker/execute",
             data: {
-                "uri": "/events/last-known/TractorHub/" + devices[index].deviceIdentifier,
+                "uri": "/events/last-known/TRACTORHUB/" + devices[index].deviceIdentifier,
                 "method": "get"
             },
             success: KnownSuccess
@@ -485,7 +485,7 @@
         $.ajax({
             type: "POST",
             url: "invoker/execute",
-            data: {"uri": "/devices/?type=TractorHub&requireDeviceInfo=true&offset=0&limit=100", "method": "get"},
+            data: {"uri": "/devices/?type=TRACTORHUB&requireDeviceInfo=true&offset=0&limit=100", "method": "get"},
             success: success
         });
     }
@@ -498,7 +498,7 @@
 
         var success = function (data) {
             var config = {};
-            config.deviceType = "TractorHub";
+            config.deviceType = "TRACTORHUB";
             config.deviceName = deviceName;
             config.deviceId = deviceId;
 
@@ -535,7 +535,7 @@
             + "\"name\": \"" + deviceName + "\",\n"
             + "\"deviceIdentifier\": \"" + deviceId + "\",\n"
             + "\"description\": \"" + deviceDesc + "\",\n"
-            + "\"type\": \"TractorHub\",\n"
+            + "\"type\": \"TRACTORHUB\",\n"
             + "\"enrolmentInfo\": {\"status\": \"ACTIVE\", \"ownership\": \"BYOD\"},\n"
             + "\"properties\": [{name: \"FarmLatitude\", value:\"" + lat + "\"}, {name: \"FarmLongitude\", value: \"" + lng + "\"}]\n"
             + "}";

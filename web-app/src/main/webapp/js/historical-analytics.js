@@ -146,7 +146,7 @@ analyticsHistory= {
             }),
             showArea: true,
             low: -10,
-            high: 100, // creative tim: we recommend you to set the high sa the biggest value + something for a better
+            high: 150, // creative tim: we recommend you to set the high sa the biggest value + something for a better
                       // look
             chartPadding: {
                 top: 0,

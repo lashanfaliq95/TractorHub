@@ -121,4 +121,11 @@ td {
     width: 25%;
 }
 
+.scrollabletextbox {
+    background: #f4f4f4;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    height: 200px; /* maximum height of the box, feel free to change this! */
+    padding: 15px;
+    overflow-y: scroll;
+}
 

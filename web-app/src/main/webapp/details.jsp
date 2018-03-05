@@ -19,6 +19,7 @@
 <%@page import="org.apache.http.client.methods.HttpPost" %>
 <%@ page import="org.apache.http.conn.ssl.SSLConnectionSocketFactory" %>
 <%@ page import="org.apache.http.conn.ssl.SSLContextBuilder" %>
+<%@ page import="org.apache.http.conn.ssl.SSLSocketFactory" %>
 <%@ page import="org.apache.http.conn.ssl.TrustSelfSignedStrategy" %>
 <%@ page import="org.apache.http.entity.ContentType" %>
 <%@ page import="org.apache.http.entity.StringEntity" %>
@@ -30,9 +31,6 @@
 <%@ page import="java.net.URI" %>
 <%@ page import="java.net.URISyntaxException" %>
 <%@ page import="java.net.URL" %>
-<%@ page import="java.security.KeyManagementException" %>
-<%@ page import="java.security.KeyStoreException" %>
-<%@ page import="java.security.NoSuchAlgorithmException" %>
 <%@ page import="java.util.Date" %>
 <%@include file="includes/authenticate.jsp" %>
 <%
@@ -55,20 +53,20 @@
     HttpPost invokerEndpoint = new HttpPost(invokerURI);
     invokerEndpoint.setHeader("Cookie", cookie);
 
-    StringEntity entity = new StringEntity("uri=/devices/TractorHub/" + id + "&method=get",
+    StringEntity entity = new StringEntity("uri=/devices/TRACTORHUB/" + id + "&method=get",
             ContentType.APPLICATION_FORM_URLENCODED);
     invokerEndpoint.setEntity(entity);
 
     SSLContextBuilder builder = new SSLContextBuilder();
     try {
         builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
-    } catch (NoSuchAlgorithmException | KeyStoreException e) {
+    } catch (Exception e) {
         e.printStackTrace();
     }
     SSLConnectionSocketFactory sslsf = null;
     try {
-        sslsf = new SSLConnectionSocketFactory(builder.build());
-    } catch (NoSuchAlgorithmException | KeyManagementException e) {
+        sslsf = new SSLConnectionSocketFactory(builder.build(), SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+    } catch (Exception e) {
         e.printStackTrace();
     }
 
@@ -92,6 +90,9 @@
     JSONObject enrolmentInfo = device.getJSONObject("enrolmentInfo");
     JSONObject lat = (JSONObject) device.getJSONArray("properties").get(0);
     JSONObject lon = (JSONObject) device.getJSONArray("properties").get(1);
+    JSONObject version = (JSONObject) device.getJSONArray("properties").get(2);
+
+
 
 %>
 
@@ -111,8 +112,8 @@
     <!-- For the date range picker in hisorical tab     -->
     <link href="css/daterangepicker.css" rel="stylesheet"/>
     <!--     Fonts and icons     -->
-    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
-    <link href='http://fonts.googleapis.com/css?family=Roboto:400,700,300|Material+Icons' rel='stylesheet'
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,700,300|Material+Icons' rel='stylesheet'
           type='text/css'>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
           integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
@@ -159,12 +160,26 @@
                 </div>
                 <div class="card-footer">
                     <div class="stats" id="opeartions">
-                        <button class="btn btn-behance" style=" background-color: #a7e0e6;" data-toggle="modal"
-                                data-target="#upgradeFirmware"> Upgrade FirmWare
-                        </button>
-                        <button class="btn btn-behance" style="  background-color: #a7e0e6;" data-toggle="modal"
-                                data-target="#upgradeConfiguration"> Send Execution Plan
-                        </button>
+                        <table style="text-align: center">
+                            <tr>
+                                <td>
+                                    <button class="btn btn-behance" style=" background-color: #a7e0e6;"
+                                            data-toggle="modal"
+                                            data-target="#upgradeFirmware"> Upgrade FirmWare
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <button class="btn btn-behance" style="  background-color: #a7e0e6;"
+                                            data-toggle="modal"
+                                            data-target="#upgradeConfiguration"> Send Execution Plan
+                                    </button>
+                                </td>
+                            </tr>
+
+                        </table>
+
                     </div>
                 </div>
             </div>
@@ -175,15 +190,16 @@
                     <h3 class="title" id="devName">
                     </h3>
                     <p class="category" id="devDetails"></p>
+                    <p class="category" id="version"></p>
                 </div>
             </div>
-            <p class="copyright" style="position: absolute;bottom:0;padding-left: 100px">
+            <div style="margin-top: 10px;margin-left: 100px">
                 &copy;
                 <script>
                     document.write(new Date().getFullYear())
                 </script>
                 <a href="https://wso2.com/iot">WSO2 Inc.</a>
-            </p>
+            </div>
         </div>
 
 
@@ -202,7 +218,7 @@
                         </li>
                     </ul>
                     <strong><%=device.getString("name")%>
-                    </strong> TractorHub Statistics
+                    </strong> TRACTORHUB Statistics
                     <ul class="nav navbar-nav navbar-right">
                         <li class="dropdown pull-right">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -220,7 +236,7 @@
                 </div>
             </div>
         </nav>
-        <%--Popup modal for adding new device--%>
+        <%--Popup modal for upgrading firmware--%>
         <div class="modal fade" id="upgradeFirmware" tabindex="-1" role="dialog"
              aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -242,44 +258,45 @@
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-info btn-simple"
-                                onclick="">Send Operation
+                                onclick="upgradeFirmware()">Send Operation
                         </button>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <%--Popup modal for adding new device--%>
-    <div class="modal fade" id="upgradeConfiguration" tabindex="-1" role="dialog"
-         aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal"
-                            aria-hidden="true">&times
-                    </button>
-                    <h4 class="modal-title" style="color:cornflowerblue;">
-                        Upload new configuration</h4>
-                </div>
 
-                <form id="send-operation-executionPlan" method="post">
-                    <div class="form-group" style="padding-left: 10%; padding-right: 10%;">
-                        <input type="text" name="executionPlan" id="executionPlan" value=""
-                               placeholder="Execution Plan"
-                               class="form-control"/>
+        <%--Popup modal for upgrading the configurations--%>
+        <div class="modal fade" id="upgradeConfiguration" tabindex="-1" role="dialog"
+             aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"
+                                aria-hidden="true">&times
+                        </button>
+                        <h4 class="modal-title" style="color:cornflowerblue;">
+                            Upload new configuration</h4>
                     </div>
-                </form>
+
+                    <form id="send-operation-executionPlan" method="post">
+                        <div class="form-group" style="padding-left: 5%; padding-right: 5%;padding-bottom: 0;">
+                        <textarea type="text" name="executionPlan" id="executionPlan" value=""
+                                  placeholder="Execution Plan"
+                                  class="form-control" cols="50" rows="10"
+                                  style=" border: 2px solid rgba(0, 0, 0, 0.1); margin-top: 10px"></textarea>
+                        </div>
+                    </form>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-info btn-simple"
-                                onclick="">Send Operation
+                                onclick="uploadConfiguration()">Send Operation
                         </button>
                     </div>
+                </div>
             </div>
         </div>
-    </div>
 
 
-    <div class="content" style="padding-top: 2px;">
+        <div class="content" style="padding-top: 2px;">
             <div id="daterangebar" style="margin-left:35%;margin-top: -4px">
                 <div class="menubutton">
                     <h4 style="margin-top: -4px"><strong id="dateR" style=" font-size: 20px;">Date-range</strong></h4>
@@ -722,8 +739,8 @@
 
     //set device details and send device details to dashboard.jsp
     document.getElementById("devName").innerHTML = "<%=device.getString("name")%>";
-    document.getElementById("devDetails").innerHTML = "Owned by " + "<%=enrolmentInfo.getString("owner")%>" + " and enrolled on " + "<%=new Date(enrolmentInfo.getLong("dateOfEnrolment")).toString()%>";
-
+    document.getElementById("devDetails").innerHTML = "Owned by " + "<%=enrolmentInfo.getString("owner")%>" + " and enrolled on " + "<%=new Date(enrolmentInfo.getLong("dateOfEnrolment")).toString()%> Version <%=version.getString("value")%>";
+    //version.getString("FirmwareVersion")
 </script>
 <script type="text/javascript">
     var alerts = [];
@@ -750,12 +767,12 @@
 
     $(document).ready(function () {
         $(document).ready(function () {
-            var wsStatsEndpoint = "<%=pageContext.getServletContext().getInitParameter("websocketEndpoint")%>/secured-websocket/iot.per.device.stream.carbon.super.TractorHub/1.0.0?"
-                + "deviceId=<%=id%>&deviceType=TractorHub&websocketToken=<%=request.getSession(false).getAttribute(LoginController.ATTR_ACCESS_TOKEN)%>";
+            var wsStatsEndpoint = "<%=pageContext.getServletContext().getInitParameter("websocketEndpoint")%>/secured-websocket/iot.per.device.stream.carbon.super.TRACTORHUB/1.0.0?"
+                + "deviceId=<%=id%>&deviceType=TRACTORHUB&websocketToken=<%=request.getSession(false).getAttribute(LoginController.ATTR_ACCESS_TOKEN)%>";
             realtimeGraphRefresh(wsStatsEndpoint);
 
-            var wsAlertEndpoint = "<%=pageContext.getServletContext().getInitParameter("websocketEndpoint")%>/secured-websocket/iot.per.device.stream.carbon.super.TractorHub.alert/1.0.0?"
-                + "deviceId=<%=id%>&deviceType=TractorHub&websocketToken=<%=request.getSession(false).getAttribute(LoginController.ATTR_ACCESS_TOKEN)%>";
+            var wsAlertEndpoint = "<%=pageContext.getServletContext().getInitParameter("websocketEndpoint")%>/secured-websocket/iot.per.device.stream.carbon.super.TRACTORHUB.alert/1.0.0?"
+                + "deviceId=<%=id%>&deviceType=TRACTORHUB&websocketToken=<%=request.getSession(false).getAttribute(LoginController.ATTR_ACCESS_TOKEN)%>";
             displayAlerts(wsAlertEndpoint);
         });
     });
@@ -846,7 +863,7 @@
             type: "POST",
             url: "invoker/execute",
             data: {
-                "uri": "/events/TractorHub/<%=id%>?offset=" + index + "&limit=" + length + "&from=" + new Date(
+                "uri": "/events/TRACTORHUB/<%=id%>?offset=" + index + "&limit=" + length + "&from=" + new Date(
                     startD.format('YYYY-MM-DD H:mm:ss')).getTime() + "&to=" + new Date(
                     endD.format('YYYY-MM-DD H:mm:ss')).getTime(),
                 "method": "get"
@@ -899,11 +916,11 @@
 
 
         //engine status
-        if (!engineStatus) {
-            $("#engine_status").html("ON");
+        if (engineStatus) {
+            $("#engine_status").html("TRUE");
         }
         else {
-            $("#engine_status").html("OFF");
+            $("#engine_status").html("FALSE");
         }
 
         //load status
@@ -953,11 +970,31 @@
         type: "POST",
         url: "invoker/execute",
         data: {
-            "uri": "/events/last-known/TractorHub/<%=id%>",
+            "uri": "/events/last-known/TRACTORHUB/<%=id%>",
             "method": "get"
         },
         success: lastKnownSuccess
     });
+
+
+    function upgradeFirmware() {
+        var url = $("#firmwareUrl").val();
+        console.log('firmware url: ' + url);
+        var success = function () {
+
+        };
+
+    }
+
+    function uploadConfiguration() {
+        var executionPlan = $("#executionPlan").val();
+        console.log('exec plan : ' + executionPlan);
+        var success = function () {
+
+        };
+
+    }
+
 
 
 </script>

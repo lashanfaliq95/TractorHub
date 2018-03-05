@@ -32,6 +32,9 @@ import org.apache.http.impl.client.HttpClients;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.owasp.esapi.Encoder;
+import org.owasp.esapi.errors.EncodingException;
+import org.owasp.esapi.reference.DefaultEncoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -42,18 +45,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ConnectException;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Base64;
-
-import org.owasp.esapi.Encoder;
-import org.owasp.esapi.Validator;
-import org.owasp.esapi.errors.EncodingException;
-import org.owasp.esapi.reference.DefaultEncoder;
-import org.owasp.esapi.reference.DefaultValidator;
-
 
 import static org.wso2.iot.weatherstation.portal.LoginController.ADMIN_PASSWORD;
 import static org.wso2.iot.weatherstation.portal.LoginController.ADMIN_USERNAME;
@@ -205,7 +198,7 @@ public class ConfigController extends HttpServlet {
                     builder.build());
             return HttpClients.custom().setSSLSocketFactory(
                     sslsf).build();
-        } catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new LoginException("Error occurred while retrieving http client", e);
         }
